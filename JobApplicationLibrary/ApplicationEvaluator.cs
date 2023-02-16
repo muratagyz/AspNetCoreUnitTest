@@ -5,14 +5,14 @@ namespace JobApplicationLibrary;
 
 public class ApplicationEvaluator
 {
+    private readonly IIdentityValidator _identityValidator;
     private const int miniAge = 18;
     private const int autoAcceptedYearsOfExperience = 15;
     private List<string> techSatacList = new() { "C#", "RabbitMQ", "Microservice", "Visual Studio" };
-    private IdentityValidator IdentityValidator;
 
-    public ApplicationEvaluator()
+    public ApplicationEvaluator(IIdentityValidator identityValidator)
     {
-        IdentityValidator = new IdentityValidator();
+        _identityValidator = identityValidator;
     }
 
     public ApplicationResult Evaluate(JobApplication form)
@@ -20,7 +20,11 @@ public class ApplicationEvaluator
         if (form.Applicant.Age < miniAge)
             return ApplicationResult.AutoRejected;
 
-        var validIdentity = IdentityValidator.IsValid(form.Applicant.IdentityNumber);
+        if (_identityValidator.CountryDataProvider.countryData.Country != "TURKEY")
+            return ApplicationResult.TransferredToCTO;
+
+        //var connectionSuccesed = _identityValidator.CheckConnectionToRemoteServer();
+        var validIdentity = _identityValidator.IsValid(form.Applicant.IdentityNumber);
 
         if (!validIdentity)
             return ApplicationResult.TransferredToHR;
