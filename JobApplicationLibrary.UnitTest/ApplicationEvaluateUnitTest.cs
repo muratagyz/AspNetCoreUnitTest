@@ -1,3 +1,4 @@
+using FluentAssertions;
 using JobApplicationLibrary.Models;
 using JobApplicationLibrary.Services;
 using Moq;
@@ -23,7 +24,9 @@ namespace JobApplicationLibrary.UnitTest
 
             // Assert
 
-            Assert.AreEqual(appResult, ApplicationResult.AutoRejected);
+            //Assert.AreEqual(appResult, ApplicationResult.AutoRejected);
+
+            appResult.Should().Be(ApplicationResult.AutoAccepted);
         }
 
         [Test]
@@ -106,6 +109,29 @@ namespace JobApplicationLibrary.UnitTest
 
             // Assert
             Assert.AreEqual(appResult, ApplicationResult.TransferredToCTO);
+        }
+
+        [Test]
+        public void Application_WithOver50_ValidationModeToDetailed()
+        {
+            var mockValidator = new Mock<IIdentityValidator>();
+
+            var evaluator = new ApplicationEvaluator(mockValidator.Object);
+            mockValidator.Setup(i => i.CountryDataProvider.countryData.Country).Returns("SPAIN");
+            mockValidator.SetupProperty(i => i.ValidationMode);
+
+            var form = new JobApplication()
+            {
+                Applicant = new Applicant()
+                {
+                    Age = 51
+                }
+            };
+            // Action
+            var appResult = evaluator.Evaluate(form);
+
+            // Assert
+            Assert.AreEqual(mockValidator.Object.ValidationMode, ValidationMode.Detailed);
         }
     }
 }

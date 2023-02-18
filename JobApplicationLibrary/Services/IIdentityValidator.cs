@@ -1,4 +1,6 @@
-﻿namespace JobApplicationLibrary.Services;
+﻿using JobApplicationLibrary.Models;
+
+namespace JobApplicationLibrary.Services;
 
 public interface IIdentityValidator
 {
@@ -9,6 +11,8 @@ public interface IIdentityValidator
     string Country { get; }
 
     ICountryDataProvider CountryDataProvider { get; }
+
+    public ValidationMode ValidationMode { get; set; }
 }
 
 public interface ICountryData
@@ -19,4 +23,10 @@ public interface ICountryData
 public interface ICountryDataProvider
 {
     ICountryData countryData { get; }
+}
+
+public enum ValidationMode
+{
+    Detailed,
+    Quick
 }

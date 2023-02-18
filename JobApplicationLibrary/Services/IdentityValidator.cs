@@ -14,4 +14,5 @@ public class IdentityValidator:IIdentityValidator
 
     public string Country { get; }
     public ICountryDataProvider CountryDataProvider { get; }
+    public ValidationMode ValidationMode { get; set; }
 }
